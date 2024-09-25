@@ -424,9 +424,8 @@ class Wordle:
         entropy = 0
         for count in pattern_count.values():
             probability              = count / total_count
-            if probability > 0:
-                entropy_amount       = probability * math.log2(probability)
-                entropy             -= entropy_amount
+            entropy_amount           = probability * math.log2(probability)
+            entropy                 -= entropy_amount
 
         return entropy
 
