@@ -197,9 +197,10 @@ class Wordle:
     def fade_out(self, step=100):
         if step >= 0:
             intensity                = int(240 * (step / 100))
-            step                     = f"#{intensity:02x}{intensity:02x}{intensity:02x}"
+            current_color            = f"#{intensity:02x}{intensity:02x}{intensity:02x}"
             self.best_word_label.configure(
-                text_color           = step)
+                text_color           = current_color
+            )
             self.app.after(
                 10, 
                 self.fade_out, 
@@ -214,9 +215,9 @@ class Wordle:
     def fade_in(self, step=0):
         if step <= 100:
             intensity                = int(240 * (step / 100))
-            step                     = f"#{intensity:02x}{intensity:02x}{intensity:02x}"
+            current_color            = f"#{intensity:02x}{intensity:02x}{intensity:02x}"
             self.best_word_label.configure(
-                text_color           = step
+                text_color           = current_color
             )
             self.app.after(
                 10,
@@ -424,8 +425,9 @@ class Wordle:
         entropy = 0
         for count in pattern_count.values():
             probability              = count / total_count
-            entropy_amount           = probability * math.log2(probability)
-            entropy                 -= entropy_amount
+            if probability > 0:
+                entropy_amount       = probability * math.log2(probability)
+                entropy             -= entropy_amount
 
         return entropy
 
