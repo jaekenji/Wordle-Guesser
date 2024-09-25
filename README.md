@@ -1,4 +1,4 @@
 # Wordle-Solver
 
-Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+(Wordle)[https://www.nytimes.com/games/wordle/index.html]
 
