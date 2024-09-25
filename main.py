@@ -19,14 +19,12 @@ class Wordle:
         self.best_word_frame         = None
         self.best_word_label         = None
 
-        # actual wordle logic
         self.possible_guesses        = guesses
         self.possible_answers        = answers
         self.best_word               = "slate"
 
         self.start()   
 
-    # starts the gui portion
     def start(self):
         if not self.initialize():
             print("[!] Failed to configure app.")
@@ -68,8 +66,6 @@ class Wordle:
         self.best_word               = "slate"
         self.update_best_word()
 
-
-    # makes a dark app and sets up a key press event (handmade typing text box)
     def initialize(self):
         self.app                     = ctk.CTk()
         self.app.geometry(
@@ -91,7 +87,6 @@ class Wordle:
         )
         return True
     
-    # build restart button
     def build_restart(self):
         restart_button               = ctk.CTkButton(
             self.app,
@@ -111,7 +106,6 @@ class Wordle:
         )
         return True
 
-    # builds a frame to hold all guessing blocks
     def build_squares_frame(self):
         self.squares_frame           = ctk.CTkFrame(
             self.app, 
@@ -127,7 +121,6 @@ class Wordle:
         )
         return True
 
-    # builds the squares (guessing blocks)
     def build_squares(self):
         for row in range(6):
             for column in range(5):
@@ -136,7 +129,6 @@ class Wordle:
                 self.squares_and_labels[(row, column)] = (square, label)
         return True
 
-    # creates a square at a given location
     def create_square(self, row, col):
         square                       = ctk.CTkFrame(
             self.squares_frame, 
@@ -153,7 +145,6 @@ class Wordle:
         )                         
         return square             
             
-    # creates a label for a given square
     def create_label(self, square):
         square_label                 = ctk.CTkLabel(
             square,               
@@ -168,7 +159,6 @@ class Wordle:
         )
         return square_label
 
-    # build frame for best word
     def build_best_frame(self):
         self.best_word_frame         = ctk.CTkFrame(
             self.app, 
@@ -186,7 +176,6 @@ class Wordle:
         )
         return True
     
-    # build label for best word
     def build_best_label(self):
         self.best_word_label         = ctk.CTkLabel(
             self.best_word_frame, 
@@ -201,12 +190,10 @@ class Wordle:
         )
         return True
 
-    # update best word (fancy)
     def update_best_word(self):
         self.fade_out()
         return True
 
-    # begin fading out
     def fade_out(self, step=100):
         if step >= 0:
             intensity                = int(240 * (step / 100))
@@ -224,7 +211,6 @@ class Wordle:
             )
             self.fade_in()
 
-    # begin fading in
     def fade_in(self, step=0):
         if step <= 100:
             intensity                = int(240 * (step / 100))
@@ -238,7 +224,6 @@ class Wordle:
                 step + 5
             )
 
-    # handle key presses
     def key_clicked(self, event):
         key = event.char.upper()
 
@@ -264,7 +249,6 @@ class Wordle:
             self.square_row_now     += 1
             self.square_now          = 0
 
-    # set letter to label at given square
     def type_letter(self, letter):
         square                       = self.squares_and_labels[(self.square_row_now, self.square_now)][0]
         square.configure(
@@ -276,7 +260,6 @@ class Wordle:
         )
         self.square_now             += 1
 
-    # remove letter to a label at given square
     def delete_letter(self):
         if self.square_now == 0:
             return
@@ -292,7 +275,6 @@ class Wordle:
             text                     = ""
         )
 
-    # updates the guessed color for current square
     def change_color(self):
         if self.square_now == 0:
             return
@@ -310,9 +292,6 @@ class Wordle:
             border_color             = next_color,
         )
 
-    # wordle logic
-    
-    # gets the inputted word-
     def verify_word(self):
         word_now                     = ""
         for square in range(5):
@@ -325,7 +304,6 @@ class Wordle:
 
         return word_now
 
-    # gets the colors to the inputted word
     def verify_color(self):
         colors                       = []
         for square in range(5):
@@ -338,7 +316,6 @@ class Wordle:
 
         return colors
 
-    # break down list and send off guess
     def do_wordle(self, word, hex_colors):
         color_map                    = {
             "#79B851": "G",
@@ -359,7 +336,6 @@ class Wordle:
 
         return True
 
-    # reduces list based on greens / yellows / grays
     def green_checker(self, guess, pattern):
         green_format                 = [guess[index] + str(index) for index in range(5) if pattern[index] == "G"]
         for green_char in green_format:
@@ -368,7 +344,6 @@ class Wordle:
             self.possible_answers    = [word for word in self.possible_answers if word[place] == letter]
 
     def yellow_checker(self, guess, pattern):
-        # updated solution for dupes
         green_places                 = [index for index in range(5) if pattern[index] == "G"]
         yellow_places                = [index for index in range(5) if pattern[index] == "Y"]
 
@@ -376,19 +351,16 @@ class Wordle:
     
         duplicates_included          = self.possible_answers
         for letter, yellow_place in yellow_format:
-            # craziest line here - all words possible if: letter is in the word and not in the spot guessed, and if there are duplicates make sure they are not in the green spots as well 
             duplicates_included = [word for word in duplicates_included if letter in word and word[yellow_place] != letter and sum(1 for i, c in enumerate(word) if c == letter and i not in green_places) >= len(yellow_places)]
         
         self.possible_answers = duplicates_included
 
     def gray_checker(self, guess, pattern):
         good_letters                 = [guess[index] for index in range(5) if pattern[index] != "B"]
-        # protect any letters that are good
         gray_letters                 = [guess[index] for index in range(5) if pattern[index] == "B" and guess[index] not in good_letters]
         for gray_char in gray_letters:
             self.possible_answers    = [word for word in self.possible_answers if gray_char not in word]
 
-    # go through all possible guesses and send back the most informative
     def next_guess(self):
         best_guess                   = None
         best_entropy                 = -float('inf')
@@ -404,7 +376,6 @@ class Wordle:
 
         return best_guess
 
-    # take all patterns with their occurrences and send for calculation
     def get_best_entropy(self, guess):
         pattern_count                = {}
 
@@ -419,7 +390,6 @@ class Wordle:
         entropy                      = self.calculate_entropy(pattern_count, total_answers)
         return entropy
 
-    # retrieves a pattern based on the correct word vs every possible guess 
     def get_pattern(self, guess, target):
         pattern                      = ["", "", "", "", ""]
         target_list                  = list(target)
@@ -431,7 +401,6 @@ class Wordle:
         pattern                      = "".join(pattern)
         return pattern
 
-    # quickly create a green / yellow /gray marking
     def mark_greens(self, guess, pattern, targets):
         for index, letter in enumerate(guess):
             if letter == targets[index]:
@@ -451,7 +420,6 @@ class Wordle:
                 if letter not in targets:
                     pattern[index]   = "B"
     
-    # use shannon entropy to find total entropy of patterns and their counts
     def calculate_entropy(self, pattern_count, total_count):
         entropy = 0
         for count in pattern_count.values():
