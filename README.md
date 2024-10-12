@@ -4,8 +4,6 @@
 
 After each guess, the solver eliminates words from the possible answers based on the feedback, calculates the entropy for each potential guess, and recommends the guess that will provide the most information.
 
-![image](https://github.com/user-attachments/assets/eae45147-181d-4284-8404-50cd43ee35e7)
-
 ## How it works
 
 For a given possible answers list, the solver goes through each potential guess, and evaluates that word. The word is sent with the possible pattern, and all patterns for all words are counted.
