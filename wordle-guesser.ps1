@@ -201,5 +201,6 @@ class WordleGuesser
 }
 
 function Wordle-Guesser {
-    [WordleGuesser]::new().start()
+    $wordle_guesser = [WordleGuesser]::new()
+    $wordle_guesser.start()
 }
