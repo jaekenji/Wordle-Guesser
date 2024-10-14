@@ -1,5 +1,7 @@
-$global:guesses = get-content guesses.txt
-$global:answers = get-content answers.txt
+$PROFILE_DIR = "C:\Users\silentis\Documents\WindowsPowerShell"
+
+$global:guesses = get-content $PROFILE_DIR\guesses.txt
+$global:answers = get-content $PROFILE_DIR\answers.txt
 
 class WordleGuesser
 {
@@ -14,12 +16,12 @@ class WordleGuesser
 
     WordleGuesser()
     {
-        $this.guesses    = $global:guesses
-        $this.answers    = $global:answers
-        $this.guess      = ""
-        $this.pattern    = ""
-        $this.best_guess = "salet"
-        $this.running    = $true
+        $this.guesses         = $global:guesses
+        $this.answers         = $global:answers
+        $this.guess           = ""
+        $this.pattern         = ""
+        $this.best_guess      = "salet"
+        $this.running         = $true
     }
 
     [void] start()
@@ -32,12 +34,12 @@ class WordleGuesser
 
     [void] guesser()
     {
-        $this.guess   = read-host "Guess"
-        $this.pattern = read-host "Pattern"
+        $this.guess           = read-host "Guess"
+        $this.pattern         = read-host "Pattern"
 
         if (-not $this.guess -or -not $this.pattern)
         {
-            $this.running = $false
+            $this.running     = $false
             return
         }
 
@@ -51,7 +53,7 @@ class WordleGuesser
 
         if (-not $this.answers)
         {
-            $this.running = $false
+            $this.running     = $false
             return
         }
 
@@ -61,18 +63,18 @@ class WordleGuesser
 
         if ($this.answers.length -eq 1)
         {
-            $this.running = $false
+            $this.running     = $false
             return
         }
     }
 
     [void] checker()
     {
-        $good_letters = @()
+        $good_letters         = @()
 
         for ($index = 0; $index -lt $this.guess.length; $index++)
         {
-            $letter = $this.guess[$index]
+            $letter           = $this.guess[$index]
 
             if ($this.pattern[$index] -ne "b")
             {
@@ -82,7 +84,7 @@ class WordleGuesser
         
         for ($index = 0; $index -lt $this.guess.length; $index++)
         {
-            $letter = $this.guess[$index]
+            $letter           = $this.guess[$index]
 
             if ($this.pattern[$index] -eq "g")
             {
@@ -106,34 +108,34 @@ class WordleGuesser
     {
         if ($this.answers.length -lt 3)
         {
-            $this.best_guess = $this.answers[0]
+            $this.best_guess  = $this.answers[0]
             return
         }
 
-        $best_word = ""
-        $best_entropy = 0
+        $best_word            = ""
+        $best_entropy         = 0
 
         foreach ($guess in $this.guesses)
         {
-            $entropy = $this.entropy($guess)
+            $entropy          = $this.entropy($guess)
 
             if ($entropy -gt $best_entropy)
             {
-                $best_word = $guess
+                $best_word    = $guess
                 $best_entropy = $entropy
             }
         }
         
-        $this.best_guess = $best_word
+        $this.best_guess      = $best_word
     }
 
     [float] entropy($guess)
     {
-        $patterns = @{}
+        $patterns             = @{}
 
         foreach ($answer in $this.answers)
         {
-            $local_pattern = $this.getpattern($guess, $answer)
+            $local_pattern    = $this.getpattern($guess, $answer)
 
             if (-not $patterns.containskey($local_pattern))
             {
@@ -143,7 +145,7 @@ class WordleGuesser
             $patterns[$local_pattern] += 1
         }
 
-        $total_answers = $this.answers.length
+        $total_answers        = $this.answers.length
 
         $entropy = $this.calculateentropy($total_answers, $patterns)
         return $entropy
@@ -151,11 +153,11 @@ class WordleGuesser
 
     [string] getpattern($guess, $answer)
     {
-        $local_pattern = @("") * 5
+        $local_pattern        = @("") * 5
 
         for ($index = 0; $index -lt $this.guess.length; $index++)
         {
-            $letter = $guess[$index]
+            $letter           = $guess[$index]
             
             if ($letter -eq $answer[$index])
             {
@@ -173,28 +175,28 @@ class WordleGuesser
             }
         }
 
-        $local_pattern = $local_pattern -join ""
+        $local_pattern        = $local_pattern -join ""
         return $local_pattern
     }
 
     [float] calculateentropy($total_answers, $patterns)
     {
-        $entropies = @()
+        $entropies            = @()
 
         foreach ($pattern in $patterns.getenumerator())
         {
-            $count = $pattern.value
-            $probability = $count / $total_answers
-            $entropy_amount = [math]::log(1 / $probability) / [math]::log(2)
+            $count            = $pattern.value
+            $probability      = $count / $total_answers
+            $entropy_amount   = [math]::log(1 / $probability) / [math]::log(2)
 
             for ($index = 0; $index -lt $count; $index++)
             {
-                $entropies += $entropy_amount
+                $entropies   += $entropy_amount
             }
         }
 
-        $entropy_measured = $entropies | measure -sum
-        $entropy = $entropy_measured.sum / $entropy_measured.count
+        $entropy_measured     = $entropies | measure -sum
+        $entropy              = $entropy_measured.sum / $entropy_measured.count
 
         return $entropy
     }
