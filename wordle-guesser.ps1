@@ -1,5 +1,5 @@
-$global:guesses = guesses.txt
-$global:answers = answers.txt
+$global:guesses = ".\guesses.txt"
+$global:answers = ".\answers.txt"
 
 class WordleGuesser
 {
