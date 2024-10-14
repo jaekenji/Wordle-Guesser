@@ -2,7 +2,7 @@ $global:guesses = ".\guesses.txt"
 $global:answers = ".\answers.txt"
 
 class WordleGuesser
-{
+{   
     [array] $guesses
     [array] $answers
 
