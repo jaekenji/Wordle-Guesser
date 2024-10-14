@@ -1,7 +1,5 @@
-$PROFILE_DIR = "C:\Users\silentis\Documents\WindowsPowerShell"
-
-$global:guesses = get-content $PROFILE_DIR\guesses.txt
-$global:answers = get-content $PROFILE_DIR\answers.txt
+$global:guesses = guesses.txt
+$global:answers = answers.txt
 
 class WordleGuesser
 {
