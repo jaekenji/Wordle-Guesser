@@ -1,5 +1,5 @@
-$global:guesses = ".\guesses.txt"
-$global:answers = ".\answers.txt"
+$global:guesses = (cat ".\guesses.txt") -split '\n'
+$global:answers = (cat ".\answers.txt") -split '\n'
 
 class WordleGuesser
 {   
